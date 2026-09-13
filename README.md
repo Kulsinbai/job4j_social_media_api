@@ -15,3 +15,51 @@
 4. Между пользователями создаётся дружба.
 5. Оба пользователя становятся подписчиками друг друга.
 6. Система отправляет уведомления.
+
+## Запуск приложения
+
+Команды выполняются из корневой папки проекта, где находится pom.xml.
+
+Windows PowerShell:
+
+```powershell
+.\mvnw.cmd spring-boot:run
+```
+
+Linux и macOS:
+
+```bash
+./mvnw spring-boot:run
+```
+
+## Проверка API
+
+После запуска приложения откройте в браузере:
+
+http://localhost:8080/api/ping
+
+Обработчик принимает GET-запрос и возвращает HTTP-статус 200
+с JSON-ответом:
+
+```json
+{
+  "status": "ok",
+  "service": "social-media-api"
+}
+```
+
+## Сборка и тесты
+
+Windows PowerShell:
+
+```powershell
+.\mvnw.cmd clean verify
+```
+
+Linux и macOS:
+
+```bash
+./mvnw clean verify
+```
+
+Тесты проверяют запуск Spring Context и ответ GET /api/ping.
