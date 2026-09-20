@@ -1,3 +1,11 @@
 spring:
   application:
     name: social-media-api
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/social_media
+    username: postgres
+    password: ${DB_PASSWORD}
+
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
