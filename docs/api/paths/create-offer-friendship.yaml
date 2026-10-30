@@ -1,0 +1,112 @@
+post:
+  tags:
+    - Offer friendships
+  summary: Создать предложение дружбы
+  description: |
+    Создаёт заявку в друзья от отправителя к получателю.
+    Текущий пользователь определяется по данным авторизации и должен совпадать с `fromUserId`.
+
+    При первом успешном создании заявка получает статус `PENDING`; отправитель подписывается на получателя.
+
+    Повторный запрос с теми же участниками:
+    - заявка в `PENDING` или `ACCEPTED` — `204 No Content` без тела;
+    - заявка в `REJECTED` — `409 Conflict` с полями `code` и `message`.
+  operationId: createOfferFriendship
+  security:
+    - bearerAuth: []
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../openapi.yaml#/components/schemas/CreateOfferFriendshipRequest'
+        examples:
+          default:
+            summary: Пользователь 1 предлагает дружбу пользователю 2
+            value:
+              fromUserId: 1
+              toUserId: 2
+  responses:
+    '201':
+      description: Заявка создана
+      content:
+        application/json:
+          schema:
+            $ref: '../openapi.yaml#/components/schemas/OfferFriendship'
+          examples:
+            created:
+              summary: Новая заявка в ожидании
+              value:
+                id: 10
+                fromUserId: 1
+                toUserId: 2
+                status: PENDING
+                createdAt: '2026-10-29T10:00:00Z'
+    '204':
+      description: |
+        Повторное создание при существующей заявке в статусе `PENDING` или `ACCEPTED`.
+        Состояние не меняется, дубликаты не создаются.
+    '400':
+      description: |
+        Некорректные данные запроса: заявка самому себе,
+        отсутствует обязательное поле или значение передано неправильного типа.
+      content:
+        application/json:
+          schema:
+            $ref: '../openapi.yaml#/components/schemas/ApiError'
+          examples:
+            selfOffer:
+              summary: Заявка самому себе
+              value:
+                code: SELF_FRIENDSHIP_OFFER
+                message: Нельзя отправить заявку в друзья самому себе
+            invalidFormat:
+              summary: Неверный формат тела запроса
+              value:
+                code: VALIDATION_ERROR
+                message: Некорректный формат запроса
+    '401':
+      description: Пользователь не авторизован
+      content:
+        application/json:
+          schema:
+            $ref: '../openapi.yaml#/components/schemas/ApiError'
+          examples:
+            unauthorized:
+              value:
+                code: UNAUTHORIZED
+                message: Необходима авторизация
+    '403':
+      description: Действие от имени другого пользователя
+      content:
+        application/json:
+          schema:
+            $ref: '../openapi.yaml#/components/schemas/ApiError'
+          examples:
+            forbiddenActor:
+              value:
+                code: FORBIDDEN
+                message: Нельзя отправить заявку от имени другого пользователя
+    '404':
+      description: Отправитель или получатель не найден
+      content:
+        application/json:
+          schema:
+            $ref: '../openapi.yaml#/components/schemas/ApiError'
+          examples:
+            userNotFound:
+              value:
+                code: USER_NOT_FOUND
+                message: Пользователь не найден
+    '409':
+      description: Повторное предложение после отклонения
+      content:
+        application/json:
+          schema:
+            $ref: '../openapi.yaml#/components/schemas/ApiError'
+          examples:
+            afterRejected:
+              summary: Заявка ранее отклонена
+              value:
+                code: OFFER_AFTER_REJECTED
+                message: Повторное предложение после отклонения запрещено

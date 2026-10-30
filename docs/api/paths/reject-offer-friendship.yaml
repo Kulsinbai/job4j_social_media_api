@@ -1,0 +1,106 @@
+post:
+  tags:
+    - Offer friendships
+  summary: Отклонить предложение дружбы
+  description: |
+    Отклоняет заявку по участникам `fromUserId` (отправитель) и `toUserId` (получатель).
+    Текущий пользователь должен быть получателем (`toUserId`).
+
+    Первое успешное отклонение из статуса `PENDING` переводит заявку в `REJECTED` и возвращает `200` с JSON заявки.
+
+    Повторное отклонение при статусе `REJECTED` — `204 No Content` без тела.
+
+    Отклонить заявку в статусе `ACCEPTED` нельзя — `409 Conflict`.
+
+    Дружба и обратная подписка не создаются.
+    Существующие подписки сохраняются.
+  operationId: rejectOfferFriendship
+  security:
+    - bearerAuth: []
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../openapi.yaml#/components/schemas/OfferFriendshipParticipantsRequest'
+        examples:
+          default:
+            summary: Пользователь 2 отклоняет заявку от пользователя 1
+            value:
+              fromUserId: 1
+              toUserId: 2
+  responses:
+    '200':
+      description: Заявка отклонена (переход из PENDING в REJECTED)
+      content:
+        application/json:
+          schema:
+            $ref: '../openapi.yaml#/components/schemas/OfferFriendship'
+          examples:
+            rejected:
+              value:
+                id: 10
+                fromUserId: 1
+                toUserId: 2
+                status: REJECTED
+                createdAt: '2026-10-29T10:00:00Z'
+    '204':
+      description: |
+        Повторное отклонение при статусе `REJECTED`.
+        Состояние не меняется.
+    '400':
+      description: |
+        Отсутствует обязательное поле или значение передано неправильного типа.
+      content:
+        application/json:
+          schema:
+            $ref: '../openapi.yaml#/components/schemas/ApiError'
+          examples:
+            invalidFormat:
+              value:
+                code: VALIDATION_ERROR
+                message: Некорректный формат запроса
+    '401':
+      description: Пользователь не авторизован
+      content:
+        application/json:
+          schema:
+            $ref: '../openapi.yaml#/components/schemas/ApiError'
+          examples:
+            unauthorized:
+              value:
+                code: UNAUTHORIZED
+                message: Необходима авторизация
+    '403':
+      description: Отклонить может только получатель заявки
+      content:
+        application/json:
+          schema:
+            $ref: '../openapi.yaml#/components/schemas/ApiError'
+          examples:
+            forbiddenActor:
+              value:
+                code: FORBIDDEN
+                message: Отклонить предложение может только его получатель
+    '404':
+      description: Заявка не найдена
+      content:
+        application/json:
+          schema:
+            $ref: '../openapi.yaml#/components/schemas/ApiError'
+          examples:
+            notFound:
+              value:
+                code: OFFER_NOT_FOUND
+                message: Предложение дружбы не найдено
+    '409':
+      description: Нельзя отклонить принятое предложение
+      content:
+        application/json:
+          schema:
+            $ref: '../openapi.yaml#/components/schemas/ApiError'
+          examples:
+            alreadyAccepted:
+              value:
+                code: CANNOT_REJECT_ACCEPTED_OFFER
+                message: Нельзя отклонить принятое предложение

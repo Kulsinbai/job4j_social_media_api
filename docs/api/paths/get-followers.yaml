@@ -1,0 +1,36 @@
+get:
+  tags:
+    - Subscribes
+  summary: Получить подписчиков
+  description: |
+    Возвращает пользователей, которые подписаны на текущего пользователя.
+    Запрос только для чтения, данные не изменяются.
+  operationId: getSubscribeFollowers
+  security:
+    - bearerAuth: []
+  responses:
+    '200':
+      description: Список подписчиков (может быть пустым)
+      content:
+        application/json:
+          schema:
+            $ref: '../openapi.yaml#/components/schemas/UserIdList'
+          examples:
+            withFollowers:
+              summary: На текущего пользователя подписаны 2 и 3
+              value:
+                - userId: 2
+                - userId: 3
+            empty:
+              value: []
+    '401':
+      description: Пользователь не авторизован
+      content:
+        application/json:
+          schema:
+            $ref: '../openapi.yaml#/components/schemas/ApiError'
+          examples:
+            unauthorized:
+              value:
+                code: UNAUTHORIZED
+                message: Необходима авторизация

@@ -1,0 +1,36 @@
+get:
+  tags:
+    - Friendships
+  summary: Получить список друзей
+  description: |
+    Возвращает список друзей текущего авторизованного пользователя.
+    Запрос не изменяет заявки, дружбу и подписки.
+  operationId: getFriendships
+  security:
+    - bearerAuth: []
+  responses:
+    '200':
+      description: Список друзей (может быть пустым)
+      content:
+        application/json:
+          schema:
+            $ref: '../openapi.yaml#/components/schemas/UserIdList'
+          examples:
+            withFriends:
+              summary: Пользователь 1, друзья 2 и 3
+              value:
+                - userId: 2
+                - userId: 3
+            empty:
+              value: []
+    '401':
+      description: Пользователь не авторизован
+      content:
+        application/json:
+          schema:
+            $ref: '../openapi.yaml#/components/schemas/ApiError'
+          examples:
+            unauthorized:
+              value:
+                code: UNAUTHORIZED
+                message: Необходима авторизация

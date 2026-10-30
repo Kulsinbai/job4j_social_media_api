@@ -1,0 +1,143 @@
+openapi: 3.0.3
+info:
+  title: Social Media API
+  version: 1.0.0
+  description: HTTP API социальной сети
+
+paths:
+  /api/offer-friendships/create:
+    $ref: './paths/create-offer-friendship.yaml'
+  /api/offer-friendships/accept:
+    $ref: './paths/accept-offer-friendship.yaml'
+  /api/offer-friendships/reject:
+    $ref: './paths/reject-offer-friendship.yaml'
+  /api/offer-friendships/incoming:
+    $ref: './paths/get-incoming-offer-friendships.yaml'
+  /api/offer-friendships/outgoing:
+    $ref: './paths/get-outgoing-offer-friendships.yaml'
+  /api/friendships:
+    $ref: './paths/get-friendships.yaml'
+  /api/subscribes/followers:
+    $ref: './paths/get-followers.yaml'
+  /api/subscribes:
+    $ref: './paths/get-subscribes.yaml'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Текущий пользователь определяется по данным авторизации
+
+  schemas:
+    CreateOfferFriendshipRequest:
+      type: object
+      required:
+        - fromUserId
+        - toUserId
+      properties:
+        fromUserId:
+          type: integer
+          format: int64
+          description: Номер отправителя заявки
+          example: 1
+        toUserId:
+          type: integer
+          format: int64
+          description: Номер получателя заявки
+          example: 2
+      additionalProperties: false
+
+    OfferFriendshipParticipantsRequest:
+      type: object
+      required:
+        - fromUserId
+        - toUserId
+      properties:
+        fromUserId:
+          type: integer
+          format: int64
+          description: Номер отправителя исходной заявки
+          example: 1
+        toUserId:
+          type: integer
+          format: int64
+          description: Номер получателя исходной заявки
+          example: 2
+      additionalProperties: false
+
+    OfferFriendshipStatus:
+      type: string
+      enum:
+        - PENDING
+        - ACCEPTED
+        - REJECTED
+
+    OfferFriendship:
+      type: object
+      required:
+        - id
+        - fromUserId
+        - toUserId
+        - status
+        - createdAt
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Идентификатор заявки
+          example: 10
+        fromUserId:
+          type: integer
+          format: int64
+          example: 1
+        toUserId:
+          type: integer
+          format: int64
+          example: 2
+        status:
+          $ref: '#/components/schemas/OfferFriendshipStatus'
+        createdAt:
+          type: string
+          format: date-time
+          description: Время создания заявки (UTC)
+          example: '2026-10-29T10:00:00Z'
+      additionalProperties: false
+
+    OfferFriendshipList:
+      type: array
+      items:
+        $ref: '#/components/schemas/OfferFriendship'
+
+    UserIdEntry:
+      type: object
+      required:
+        - userId
+      properties:
+        userId:
+          type: integer
+          format: int64
+          description: Номер пользователя
+      additionalProperties: false
+
+    UserIdList:
+      type: array
+      items:
+        $ref: '#/components/schemas/UserIdEntry'
+
+    ApiError:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          description: Машиночитаемый код ошибки
+          example: USER_NOT_FOUND
+        message:
+          type: string
+          description: Описание ошибки для пользователя
+          example: Пользователь не найден
+      additionalProperties: false

@@ -1,0 +1,41 @@
+get:
+  tags:
+    - Offer friendships
+  summary: Получить исходящие предложения дружбы
+  description: |
+    Возвращает заявки, отправителем которых является текущий пользователь.
+    В ответ входят заявки всех статусов (`PENDING`, `ACCEPTED`, `REJECTED`).
+    Запрос не изменяет данные.
+  operationId: getOutgoingOfferFriendships
+  security:
+    - bearerAuth: []
+  responses:
+    '200':
+      description: Список исходящих заявок (может быть пустым)
+      content:
+        application/json:
+          schema:
+            $ref: '../openapi.yaml#/components/schemas/OfferFriendshipList'
+          examples:
+            forUser1:
+              summary: Текущий пользователь 1
+              value:
+                - id: 10
+                  fromUserId: 1
+                  toUserId: 2
+                  status: PENDING
+                  createdAt: '2026-10-29T10:00:00Z'
+            empty:
+              summary: Нет исходящих заявок
+              value: []
+    '401':
+      description: Пользователь не авторизован
+      content:
+        application/json:
+          schema:
+            $ref: '../openapi.yaml#/components/schemas/ApiError'
+          examples:
+            unauthorized:
+              value:
+                code: UNAUTHORIZED
+                message: Необходима авторизация

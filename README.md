@@ -96,6 +96,8 @@ Linux и macOS:
 
 http://localhost:8080/api/ping
 
+HTTP-контракт операций описан в [OpenAPI](docs/api/openapi.yaml).
+
 Обработчик принимает GET-запрос и возвращает HTTP-статус 200
 с JSON-ответом:
 
