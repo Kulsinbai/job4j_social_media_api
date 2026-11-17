@@ -6,3 +6,27 @@ databaseChangeLog:
   - include:
       file: changes/002-rename-friend-request.sql
       relativeToChangelogFile: true
+
+  - include:
+      file: changes/003-update-offer-friendships.sql
+      relativeToChangelogFile: true
+
+  - include:
+      file: changes/004-index-offer-friendships.sql
+      relativeToChangelogFile: true
+
+  - include:
+      file: changes/005-update-friendships.sql
+      relativeToChangelogFile: true
+
+  - include:
+      file: changes/006-index-friendships.sql
+      relativeToChangelogFile: true
+
+  - include:
+      file: changes/007-update-subscriptions.sql
+      relativeToChangelogFile: true
+
+  - include:
+      file: changes/008-index-subscriptions.sql
+      relativeToChangelogFile: true
